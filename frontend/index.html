@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Dockerized Job Board</title>
+<style>
+  body{font-family:-apple-system,sans-serif;max-width:560px;margin:60px auto;padding:0 20px;color:#111}
+  h1{font-size:20px}
+  button{background:#378ADD;color:#fff;border:0;border-radius:6px;padding:10px 16px;cursor:pointer;font-size:14px}
+  pre{background:#f3f4f6;padding:12px;border-radius:6px;overflow:auto;font-size:12px}
+  .job{border:1px solid #ddd;border-radius:8px;padding:12px;margin:10px 0}
+</style>
+</head>
+<body>
+<h1>🐳 Dockerized Job Board</h1>
+<p>Static frontend served by Nginx. Every API call below goes through Nginx's <code>/api/</code> reverse-proxy path — open devtools' Network tab to confirm the request never leaves port 8080.</p>
+<div id="jobs">Loading…</div>
+<h3>Response log</h3>
+<pre id="log">(nothing yet)</pre>
+<script>
+async function loadJobs(){
+  const res = await fetch('/api/jobs');
+  const jobs = await res.json();
+  document.getElementById('jobs').innerHTML = jobs.map(j =>
+    `<div class="job"><b>${j.title}</b> — ${j.location}
+     <button onclick="apply(${j.id})">Apply</button></div>`
+  ).join('');
+}
+async function apply(jobId){
+  const res = await fetch(`/api/jobs/${jobId}/apply`, {
+    method: 'POST',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify({applicant_email: 'demo@example.com'})
+  });
+  const body = await res.json();
+  document.getElementById('log').textContent =
+    `POST /api/jobs/${jobId}/apply -> ${res.status}\n` + JSON.stringify(body, null, 2) +
+    '\n\n(check: docker compose logs -f worker — the notification task runs there, not here)';
+}
+loadJobs();
+</script>
+</body>
+</html>

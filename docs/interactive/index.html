@@ -1,9 +1,400 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1"><title>Dockerized-Microservices &mdash; Tour</title>
-<style>body{margin:0;font-family:-apple-system,sans-serif;background:#06101a;color:#e6e6e6}
-header{padding:18px 24px;border-bottom:1px solid #ffffff14}main{display:grid;grid-template-columns:1fr 1fr;min-height:60vh}
-.lesson,.practice{padding:24px}.lesson{border-right:1px solid #ffffff14}h1,h2{color:#378ADD}
-textarea{width:100%;min-height:240px;background:#0000005c;color:#e6e6e6;border:1px solid #ffffff1a;border-radius:8px;padding:12px;font-family:ui-monospace,monospace}</style></head>
-<body><header><h1>Dockerized-Microservices &mdash; Interactive Tour (TODO)</h1><p>4-lesson split-panel tour scaffold. See docs/LESSON_PLAN.md.</p></header>
-<main><section class="lesson"><h2>Lesson 1 &mdash; TODO</h2><p>Concept + diagram on the left.</p></section>
-<section class="practice"><h3>Practice (TODO)</h3><textarea>// TODO starter code</textarea></section></main></body></html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Dockerized-Microservices — Interactive Tour</title>
+<style>
+  :root{--bg:#060c18;--accent:#3B82F6;--text:#e7edf8;--muted:#8291ab;--panel:#ffffff0a;--ok:#2EA56B;--bad:#C2453E;}
+  *{box-sizing:border-box}
+  body{margin:0;font-family:-apple-system,Segoe UI,Roboto,sans-serif;background:var(--bg);color:var(--text)}
+  header{padding:18px 24px;border-bottom:1px solid #ffffff1a}
+  header h1{margin:0;font-size:18px}
+  header p{margin:4px 0 0;color:var(--muted);font-size:13px}
+  .pills{display:flex;gap:8px;padding:12px 24px;flex-wrap:wrap}
+  .pill{padding:6px 12px;border-radius:999px;font-size:12px;cursor:pointer;background:var(--panel);border:1px solid #ffffff1a;color:var(--muted)}
+  .pill.active{background:var(--accent);color:#fff;font-weight:700;border-color:var(--accent)}
+  main{display:grid;grid-template-columns:1fr 1fr;min-height:62vh}
+  .lesson,.practice{padding:24px;overflow:auto}
+  .lesson{border-right:1px solid #ffffff1a}
+  .lesson h2{color:#93c5fd;margin-top:0}
+  .lesson code,.lesson pre{background:#00000055;border-radius:6px}
+  .lesson pre{padding:12px;overflow:auto;font-size:13px}
+  .lesson code{padding:1px 5px;font-size:13px}
+  .practice h3{margin-top:0;color:var(--muted);text-transform:uppercase;font-size:12px;letter-spacing:1px}
+  .practice pre{background:#00000055;border-radius:8px;padding:12px;overflow:auto;font-size:13px;font-family:ui-monospace,monospace}
+  nav{display:flex;justify-content:space-between;align-items:center;padding:16px 24px;border-top:1px solid #ffffff1a}
+  button{background:var(--accent);color:#fff;border:0;border-radius:8px;padding:10px 16px;font-weight:700;cursor:pointer;margin:0 8px 0 0}
+  button.ghost{background:transparent;color:var(--accent);border:1px solid var(--accent)}
+  button:disabled{opacity:.4;cursor:default}
+  .note{font-size:12px;color:var(--muted);margin-top:8px}
+  .diagram-card{background:#fff;border-radius:10px;padding:16px;margin-bottom:14px}
+  .diagram-card svg{width:100%;height:auto;display:block}
+  .diagram-card figcaption{font-family:sans-serif;font-size:11px;color:#666;margin-bottom:6px}
+  .quiz-panel{padding:24px;max-width:760px;margin:0 auto}
+  .quiz-panel h2{color:#93c5fd;margin-top:0}
+  .qtext{font-size:16px;font-weight:600;margin:6px 0 14px}
+  .qopt{display:block;width:100%;text-align:left;background:var(--panel);color:var(--text);border:1px solid #ffffff1f;border-radius:8px;padding:12px 14px;margin:8px 0;cursor:pointer;font-size:14px;font-family:inherit}
+  .qopt:hover:not(:disabled){border-color:var(--accent)}
+  .qopt.ok{border-color:var(--ok);background:#2ea56b22}
+  .qopt.bad{border-color:var(--bad);background:#c2453e22}
+  .qexplain{display:none;margin-top:12px;padding:12px;border-left:3px solid var(--accent);background:#ffffff0d;border-radius:4px;font-size:13px}
+  .qfoot{display:flex;justify-content:space-between;align-items:center;margin-top:18px}
+  .qfoot .sc{color:var(--muted);font-size:13px}
+  .cl{border:1px solid #ffffff1f;border-radius:10px;padding:14px 16px;margin-top:18px;background:var(--panel)}
+  .cl .cap{font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);font-weight:700;margin-bottom:8px}
+  .cl a{display:block;color:var(--text);text-decoration:none;padding:5px 0;font-size:13px}
+  .cl a:hover{color:#93c5fd}
+  .cl .tag{font-size:10px;font-weight:700;text-transform:uppercase;color:#93c5fd;margin-right:6px}
+  .qc{border:1px solid #ffffff1f;border-radius:10px;padding:14px 16px;margin-top:12px}
+  .qc .cap{font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);font-weight:700;margin-bottom:8px}
+  .qc .qt{font-size:14px;font-weight:600;margin-bottom:10px}
+  .qc .qcopt{display:block;width:100%;text-align:left;background:var(--panel);color:var(--text);border:1px solid #ffffff1f;border-radius:8px;padding:9px 12px;margin:6px 0;cursor:pointer;font-size:13px;font-family:inherit}
+  .qc .qcopt:hover:not(:disabled){border-color:var(--accent)}
+  .qc .qcopt.ok{border-color:var(--ok);background:#2ea56b22}
+  .qc .qcopt.bad{border-color:var(--bad);background:#c2453e22}
+  .qc .qcexplain{display:none;margin-top:10px;padding:10px;border-left:3px solid var(--accent);background:#ffffff0d;border-radius:4px;font-size:12px}
+  .report-card{padding:24px;max-width:580px;margin:0 auto}
+  .report-card h4{margin:16px 0 6px;font-size:11px;text-transform:uppercase;letter-spacing:.05em;color:var(--muted)}
+  .report-row{display:flex;justify-content:space-between;align-items:center;padding:7px 0;border-bottom:1px solid #ffffff14;font-size:14px}
+  .report-row .grade{font-weight:700}
+  .grade-A{color:#2EA56B}.grade-B{color:#9ad24a}.grade-C{color:#e0b63c}.grade-D,.grade-F{color:#C2453E}.grade-dash{color:var(--muted)}
+  .report-overall{display:flex;align-items:baseline;gap:10px;margin:14px 0}
+  .report-overall .big{font-size:38px;font-weight:800;color:#93c5fd}
+  @media print{
+    header,.pills,nav,.report-card button{display:none!important}
+    body{background:#fff;color:#111}
+    .report-row{border-bottom-color:#ddd}
+  }
+</style>
+</head>
+<body>
+<header>
+  <h1>🐳 Dockerized-Microservices &mdash; Interactive Tour <span style="color:var(--muted);font-weight:400;font-size:12px">· Chain C · concept tour</span></h1>
+  <p>Left: the concept. Right: the real Dockerfile/Compose/Nginx/CI config from this repo &mdash; concept-only, no live execution engine.</p>
+  <p style="font-size:11px;color:var(--muted);margin-top:4px">Progress (quick checks, quiz score) saves in this browser only &mdash; localStorage, not an account.</p>
+</header>
+<div class="pills" id="pills"></div>
+<main>
+  <section class="lesson" id="lesson"></section>
+  <section class="practice" id="practice"></section>
+</main>
+<section class="quiz-panel" id="quizPanel" style="display:none"></section>
+<section class="report-card" id="toolPanel" style="display:none"></section>
+<nav>
+  <button class="ghost" onclick="go(-1)">← Previous</button>
+  <span id="counter"></span>
+  <button class="ghost" id="nextBtn" onclick="go(1)">Next →</button>
+</nav>
+
+<script>
+function layersSVG(){
+  return `<div class="diagram-card"><figcaption>reordering so requirements.txt installs BEFORE app code means Docker's layer cache survives every code-only change</figcaption>
+  <svg viewBox="0 0 640 170" xmlns="http://www.w3.org/2000/svg">
+    ${["FROM python:3.12-slim","COPY requirements.txt .","RUN pip install -r requirements.txt","COPY app/ app/"].map((t,idx)=>{
+      const y=20+idx*36;
+      return `<rect x="40" y="${y}" width="420" height="28" rx="5" fill="${idx===3?'#3B82F6':'#e5e7eb'}" stroke="#9ca3af"/>
+      <text x="55" y="${y+19}" font-size="10.5" font-family="monospace" fill="${idx===3?'#fff':'#374151'}">${t}</text>`;
+    }).join('')}
+    <text x="490" y="40" font-size="9" fill="#6b7280">cached unless</text>
+    <text x="490" y="52" font-size="9" fill="#6b7280">requirements.txt</text>
+    <text x="490" y="64" font-size="9" fill="#6b7280">changes</text>
+    <text x="490" y="150" font-size="9" fill="#1d4ed8" font-weight="700">rebuilds on</text>
+    <text x="490" y="162" font-size="9" fill="#1d4ed8" font-weight="700">EVERY code edit</text>
+  </svg></div>`;
+}
+function composeSVG(){
+  return `<div class="diagram-card"><figcaption>service_healthy means "redis actually answers PING," not just "the container process started"</figcaption>
+  <svg viewBox="0 0 640 150" xmlns="http://www.w3.org/2000/svg">
+    <rect x="30" y="55" width="130" height="46" rx="8" fill="#1d4ed8"/>
+    <text x="95" y="83" text-anchor="middle" font-size="11" font-weight="700" fill="#fff">redis</text>
+    <rect x="260" y="20" width="130" height="46" rx="8" fill="#3B82F6"/>
+    <text x="325" y="48" text-anchor="middle" font-size="11" font-weight="700" fill="#fff">api</text>
+    <rect x="260" y="90" width="130" height="46" rx="8" fill="#3B82F6"/>
+    <text x="325" y="118" text-anchor="middle" font-size="11" font-weight="700" fill="#fff">worker</text>
+    <rect x="490" y="55" width="130" height="46" rx="8" fill="#60a5fa"/>
+    <text x="555" y="83" text-anchor="middle" font-size="11" font-weight="700" fill="#06222b">nginx</text>
+    <line x1="160" y1="78" x2="260" y2="43" stroke="#2EA56B" stroke-width="2" stroke-dasharray="6,6"><animate attributeName="stroke-dashoffset" from="24" to="0" dur="1s" repeatCount="indefinite"/></line>
+    <line x1="160" y1="78" x2="260" y2="113" stroke="#2EA56B" stroke-width="2" stroke-dasharray="6,6"><animate attributeName="stroke-dashoffset" from="24" to="0" dur="1s" repeatCount="indefinite"/></line>
+    <text x="195" y="68" text-anchor="middle" font-size="8" fill="#2EA56B" font-weight="700">healthy</text>
+    <line x1="390" y1="43" x2="490" y2="68" stroke="#9ca3af" stroke-width="2" stroke-dasharray="6,6"/>
+  </svg></div>`;
+}
+function nginxSVG(){
+  return `<div class="diagram-card"><figcaption>one public port, two upstreams &mdash; the path decides which one, never the client</figcaption>
+  <svg viewBox="0 0 640 150" xmlns="http://www.w3.org/2000/svg">
+    <rect x="30" y="55" width="130" height="46" rx="8" fill="#60a5fa"/>
+    <text x="95" y="83" text-anchor="middle" font-size="11" font-weight="700" fill="#06222b">nginx :8080</text>
+    <rect x="300" y="20" width="150" height="40" rx="8" fill="#3B82F6"/>
+    <text x="375" y="44" text-anchor="middle" font-size="10" font-weight="700" fill="#fff">/api/* &rarr; api:8000</text>
+    <rect x="300" y="90" width="150" height="40" rx="8" fill="#1d4ed8"/>
+    <text x="375" y="114" text-anchor="middle" font-size="10" font-weight="700" fill="#fff">/* &rarr; static files</text>
+    <line x1="160" y1="70" x2="300" y2="40" stroke="#3B82F6" stroke-width="2" stroke-dasharray="6,6"><animate attributeName="stroke-dashoffset" from="24" to="0" dur="1s" repeatCount="indefinite"/></line>
+    <line x1="160" y1="85" x2="300" y2="110" stroke="#1d4ed8" stroke-width="2" stroke-dasharray="6,6"><animate attributeName="stroke-dashoffset" from="24" to="0" dur="1.2s" repeatCount="indefinite"/></line>
+  </svg></div>`;
+}
+function ciSVG(){
+  return `<div class="diagram-card"><figcaption>build-and-push has needs: test &mdash; a red test job means the pipeline stops, nothing reaches GHCR</figcaption>
+  <svg viewBox="0 0 640 140" xmlns="http://www.w3.org/2000/svg">
+    ${["push","test","build","push to GHCR"].map((label,idx)=>{
+      const x=20+idx*155;
+      return `<rect x="${x}" y="40" width="130" height="44" rx="8" fill="${idx===1?'#2EA56B':'#3B82F6'}"/>
+      <text x="${x+65}" y="67" text-anchor="middle" font-size="10.5" font-weight="700" fill="#fff">${label}</text>`;
+    }).join('')}
+    ${[0,1,2].map(idx=>{
+      const x1=20+idx*155+130, x2=20+(idx+1)*155;
+      return `<line x1="${x1}" y1="62" x2="${x2}" y2="62" stroke="#3B82F6" stroke-width="2" stroke-dasharray="6,6"><animate attributeName="stroke-dashoffset" from="24" to="0" dur="1s" repeatCount="indefinite"/></line>`;
+    }).join('')}
+    <text x="240" y="110" text-anchor="middle" font-size="9" fill="#2EA56B" font-weight="700">needs: test</text>
+  </svg></div>`;
+}
+
+const LESSONS = [
+{
+  short:"1. Why Docker?",
+  title:"1 — Why Docker? The Works-On-My-Machine Problem",
+  body:`<p>C-1's app assumes a Python version, a set of installed packages, and a running Redis &mdash; all implicit, all living only in your head and your laptop's state. A Dockerfile makes every one of those assumptions explicit and reproducible: <code>FROM python:3.12-slim</code> pins the interpreter, <code>COPY requirements.txt</code> + <code>pip install</code> pins the dependencies, and the resulting image runs identically on a teammate's machine, in CI, and in production.</p>
+  <p>Docker builds an image in <b>layers</b>, one per instruction, and caches each layer. A later build only re-runs the instructions from the first changed layer onward &mdash; everything before that is reused instantly from cache.</p>`,
+  diagram: layersSVG(),
+  code:`# api/Dockerfile — order matters here\nFROM python:3.12-slim AS builder\nWORKDIR /build\nCOPY requirements.txt .\nRUN pip install --no-cache-dir --prefix=/install -r requirements.txt\n\nFROM python:3.12-slim\nWORKDIR /app\nCOPY --from=builder /install /usr/local\nCOPY app/ app/\nCMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]`,
+  continueLearning:[
+    {type:"read",label:"Docker — Multi-Stage Builds",url:"https://docs.docker.com/build/building/multi-stage/"}
+  ],
+  quickCheck:{
+    q:"Why does api/Dockerfile COPY requirements.txt and run pip install BEFORE copying app/?",
+    options:[
+      {t:"So the pip-install layer stays cached across rebuilds that only change application code, not dependencies",ok:true},
+      {t:"Python requires dependencies to be installed before any application code exists on disk",ok:false},
+      {t:"It has no effect on build speed, only on file permissions",ok:false}
+    ],
+    explain:"Docker caches each instruction's layer. If app code were copied first, editing a single line would invalidate every layer after it — including the slow pip install. Ordering requirements.txt first means only a dependency change busts that cache."
+  }
+},
+{
+  short:"2. Compose + Celery",
+  title:"2 — Docker Compose: Wiring Services Together",
+  body:`<p>Four services, one <code>docker-compose.yml</code>: <code>redis</code> (broker), <code>api</code> and <code>worker</code> (the <b>same built image</b>, different <code>command:</code>), and <code>nginx</code> (public door). Service discovery is by name &mdash; <code>api</code> can reach <code>redis://redis:6379/0</code> because Docker's embedded DNS resolves the service name <code>redis</code> to that container's current IP, no hardcoding, no lookup table to keep in sync.</p>
+  <p><code>depends_on: {redis: {condition: service_healthy}}</code> is what actually matters here: plain <code>depends_on</code> only waits for a container to <i>start</i>, not for Redis to be <i>accepting connections</i> yet.</p>`,
+  diagram: composeSVG(),
+  code:`# docker-compose.yml (excerpt)\nworker:\n  build: ./api\n  command: celery -A app.celery_app worker --loglevel=info\n  depends_on:\n    redis:\n      condition: service_healthy`,
+  continueLearning:[
+    {type:"read",label:"Docker Compose — Control Startup and Shutdown Order",url:"https://docs.docker.com/compose/how-tos/startup-order/"},
+    {type:"read",label:"Celery — First Steps with Celery",url:"https://docs.celeryq.dev/en/stable/getting-started/first-steps-with-celery.html"}
+  ],
+  quickCheck:{
+    q:"The worker container starts successfully, logs show it connected to Redis, but a task sent with .delay() never runs — no error anywhere. What's the most likely cause?",
+    options:[
+      {t:"Redis is full and silently dropping messages",ok:false},
+      {t:"The Celery app was created without include=[\"app.tasks\"], so the worker's process never imported the module that registers the task — it sits in the queue, unrecognized",ok:true},
+      {t:"Celery requires a paid license for more than one task",ok:false}
+    ],
+    explain:"This is a real bug this project's own first build hit: the worker starts from app.celery_app, which never imports app.main. Without include=[\"app.tasks\"], @celery_app.task in tasks.py never runs on the worker process, so the task name is never registered — and Celery fails SILENTLY rather than erroring, because from the broker's perspective the message is perfectly valid, just unclaimed."
+  }
+},
+{
+  short:"3. Nginx Proxy",
+  title:"3 — Nginx as Reverse Proxy",
+  body:`<p>Only <code>nginx</code> publishes a port to the host (<code>8080:80</code>) &mdash; <code>api</code>'s <code>8000</code> and <code>redis</code>'s <code>6379</code> are reachable only from inside the Docker network. Nginx's <code>location</code> blocks route by path: <code>/api/</code> proxies to the FastAPI upstream, everything else serves static files.</p>
+  <p><code>try_files $uri /index.html</code> is the line a client-side-routed SPA needs: if the requested path isn't a real file on disk, fall back to <code>index.html</code> and let the frontend's own router handle it &mdash; without this, refreshing the browser on a deep link 404s against Nginx's filesystem before React Router ever gets a chance to run.</p>`,
+  diagram: nginxSVG(),
+  code:`# nginx/nginx.conf (excerpt)\nupstream api_upstream { server api:8000; }\n\nlocation /api/ {\n  proxy_pass http://api_upstream/;\n}\nlocation / {\n  root /usr/share/nginx/html;\n  try_files $uri /index.html;\n}`,
+  continueLearning:[
+    {type:"read",label:"Nginx — Reverse Proxy (Admin Guide)",url:"https://docs.nginx.com/nginx/admin-guide/web-server/reverse-proxy/"}
+  ],
+  quickCheck:{
+    q:"Why does proxy_pass use http://api:8000 instead of a hardcoded container IP like 172.19.0.3?",
+    options:[
+      {t:"Hardcoded IPs are faster to resolve than service names",ok:false},
+      {t:"A container's IP can change on restart; Docker's embedded DNS resolves the service name to whatever the current IP is, so nginx.conf never needs to change",ok:true},
+      {t:"Nginx doesn't support IP addresses in proxy_pass at all",ok:false}
+    ],
+    explain:"Container IPs are not stable across restarts or rebuilds. Referencing the service name and letting Docker's DNS resolve it is what makes the config portable and maintenance-free."
+  }
+},
+{
+  short:"4. CI/CD",
+  title:"4 — CI/CD: Test, Then Build, Then Push",
+  body:`<p>Two jobs, not one. <code>test</code> runs <code>pytest</code> against the API. <code>build-and-push</code> has <code>needs: test</code> &mdash; GitHub Actions will not even start it until <code>test</code> finishes successfully. Only then does it log into GHCR (using the auto-provided <code>secrets.GITHUB_TOKEN</code>, no manual credential setup) and push the image tagged by the commit's git SHA.</p>`,
+  diagram: ciSVG(),
+  code:`# .github/workflows/ci.yml (excerpt)\njobs:\n  test:\n    runs-on: ubuntu-latest\n    steps:\n      - run: pytest api/tests/ -v\n\n  build-and-push:\n    needs: test\n    if: github.event_name == 'push'\n    steps:\n      - uses: docker/build-push-action@v6\n        with:\n          tags: ghcr.io/\${{ github.repository }}:\${{ github.sha }}`,
+  continueLearning:[
+    {type:"read",label:"GitHub — Working with the Container Registry",url:"https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-container-registry"},
+    {type:"read",label:"GitHub Actions — Using Jobs in a Workflow (needs)",url:"https://docs.github.com/en/actions/using-jobs/using-jobs-in-a-workflow"}
+  ],
+  quickCheck:{
+    q:"A commit breaks a test. What happens to the build-and-push job?",
+    options:[
+      {t:"It runs anyway, since building and testing are independent concerns",ok:false},
+      {t:"GitHub Actions skips it — needs: test means it only starts after test completes successfully",ok:true},
+      {t:"It runs, but pushes to a separate 'broken-builds' registry",ok:false}
+    ],
+    explain:"needs: test is a hard gate. A failed or skipped prerequisite job means every job that needs it is skipped by default — a broken image can never reach GHCR through this pipeline."
+  }
+}
+];
+
+let i = 0;
+const el = id => document.getElementById(id);
+
+const QC_KEY = 'chainC_dockerizedMicroservices_v1';
+function loadQC(){ try{ const raw = localStorage.getItem(QC_KEY); return raw ? JSON.parse(raw) : null; } catch(e){ return null; } }
+const QC_SAVED = loadQC();
+const qcAnswered = (QC_SAVED && Array.isArray(QC_SAVED.qcAnswered) && QC_SAVED.qcAnswered.length===LESSONS.length)
+  ? QC_SAVED.qcAnswered.slice() : new Array(LESSONS.length).fill(false);
+let bestQuizScore = (QC_SAVED && typeof QC_SAVED.quizScore === 'number') ? QC_SAVED.quizScore : null;
+function saveQC(){ try{ localStorage.setItem(QC_KEY, JSON.stringify({qcAnswered, quizScore: bestQuizScore})); } catch(e){} }
+
+function renderCL(links){
+  if(!links || !links.length) return '';
+  const rows = links.map(l=>'<a href="'+l.url+'" target="_blank" rel="noopener"><span class="tag">'+(l.type==='watch'?'Watch':'Read')+'</span>'+l.label+'</a>').join('');
+  return '<div class="cl"><div class="cap">📚 Continue Learning</div>'+rows+'</div>';
+}
+function renderQC(idx){
+  const l = LESSONS[idx];
+  if(!l.quickCheck) return '';
+  const done = qcAnswered[idx];
+  const q = l.quickCheck;
+  const opts = q.options.map((o,oi)=>'<button class="qcopt '+(done && o.ok?'ok':'')+'" data-oi="'+oi+'" '+(done?'disabled':'')+'>'+o.t+'</button>').join('');
+  return '<div class="qc"><div class="cap">✓ Quick Check</div><div class="qt">'+q.q+'</div>'+
+    '<div id="qcopts-'+idx+'">'+opts+'</div>'+
+    '<div class="qcexplain" id="qcexplain-'+idx+'" style="'+(done?'display:block':'')+'">'+q.explain+'</div>'+
+    (done?'':'<div class="note" style="margin-top:8px">Answer to unlock &ldquo;Next&rdquo;.</div>')+'</div>';
+}
+function pickQC(lessonIdx, oi){
+  if(qcAnswered[lessonIdx]) return;
+  qcAnswered[lessonIdx]=true;
+  const q=LESSONS[lessonIdx].quickCheck;
+  document.querySelectorAll('#qcopts-'+lessonIdx+' .qcopt').forEach((b,bi)=>{
+    b.disabled=true; if(q.options[bi].ok) b.classList.add('ok'); else if(bi===oi) b.classList.add('bad');
+  });
+  el('qcexplain-'+lessonIdx).style.display='block';
+  saveQC();
+  updateNextEnabled();
+}
+function updateNextEnabled(){
+  const nb = el('nextBtn');
+  if(nb) nb.disabled = !qcAnswered[i];
+}
+
+function render(){
+  const l = LESSONS[i];
+  el('lesson').innerHTML = '<h2>'+l.title+'</h2>'+l.body+renderCL(l.continueLearning)+renderQC(i);
+  const qcContainer = el('qcopts-'+i);
+  if(qcContainer){ qcContainer.querySelectorAll('.qcopt').forEach(btn=>{ btn.onclick=()=>pickQC(i, +btn.dataset.oi); }); }
+  el('practice').innerHTML = '<h3>Diagram + Code</h3>' + l.diagram + '<pre>'+l.code.replace(/</g,'&lt;')+'</pre>';
+  el('counter').textContent=(i+1)+' / '+LESSONS.length;
+  document.querySelectorAll('.pill').forEach((p,idx)=>p.classList.toggle('active',idx===i));
+  updateNextEnabled();
+}
+function go(d){ i=Math.max(0,Math.min(LESSONS.length-1,i+d)); render(); }
+function showLesson(){
+  el('quizPanel').style.display='none';
+  el('toolPanel').style.display='none';
+  document.querySelector('main').style.display='grid';
+  document.querySelector('nav').style.display='flex';
+}
+
+const QUIZ = [
+  {q:"Why does api/Dockerfile install dependencies in a separate layer BEFORE copying application code?",
+   options:[{t:"So the slow pip-install layer stays cached across rebuilds that only touch app code",ok:true},{t:"Docker requires it syntactically",ok:false},{t:"It reduces the final image's runtime memory usage",ok:false}],
+   explain:"Docker's layer cache invalidates from the first changed instruction onward. Code changes shouldn't force a dependency reinstall — that's exactly what this ordering prevents."},
+  {q:"What does depends_on: {redis: {condition: service_healthy}} wait for, that plain depends_on: [redis] does not?",
+   options:[{t:"It waits for Redis's healthcheck to pass (actually accepting connections), not just for the container process to start",ok:true},{t:"It waits for the entire Compose file to finish parsing",ok:false},{t:"It has no functional difference, only cosmetic",ok:false}],
+   explain:"A container can be 'started' in Docker's eyes while the process inside is still initializing. The healthy condition closes that race by waiting for the healthcheck command to actually succeed."},
+  {q:"api and worker share one build: ./api context in docker-compose.yml. What makes them behave differently?",
+   options:[{t:"Separate command: overrides per service — same image, different process (web server vs. Celery worker)",ok:true},{t:"Docker automatically assigns different roles based on service name",ok:false},{t:"They actually use two separate, hidden Dockerfiles",ok:false}],
+   explain:"One build, two roles. This is a common real-world pattern: ship one image, decide what it does at the compose/orchestration layer."},
+  {q:"A task sent with .delay() is accepted (you get a task_id back) but the worker never processes it, and there's no error. What's the likely root cause?",
+   options:[{t:"The Celery app's include=[...] is missing the module that defines the task, so the worker process never registers it",ok:true},{t:"Redis silently rejected the task due to a memory limit",ok:false},{t:"delay() only works for tasks with zero arguments",ok:false}],
+   explain:"This exact bug happened during this project's own build: the worker starts from app.celery_app, which never imports app.tasks on its own. Without the explicit include, the task name is never registered, and the failure is silent because the message itself is perfectly valid to the broker."},
+  {q:"Why does nginx.conf's try_files $uri /index.html matter specifically for a client-side-routed frontend?",
+   options:[{t:"A path like /jobs/3 isn't a real file on disk — without the fallback, a hard refresh on that URL 404s before the frontend's own router can run",ok:true},{t:"It makes static file serving faster",ok:false},{t:"It's required for any HTTPS configuration",ok:false}],
+   explain:"Client-side routes only exist in JavaScript. The server has to be told to serve index.html for any unrecognized path so the frontend router gets a chance to take over."},
+  {q:"Why does build-and-push have needs: test instead of running independently?",
+   options:[{t:"So a failing test hard-stops the pipeline before a broken image can ever reach the registry",ok:true},{t:"To run both jobs in parallel for speed",ok:false},{t:"GitHub Actions requires every workflow to have at least two jobs",ok:false}],
+   explain:"needs: creates a real dependency — the downstream job is skipped entirely if the prerequisite fails, which is what makes 'tests passed' a meaningful gate rather than a formality."}
+];
+let qi=0, qscore=0, qansw=false;
+function openQuiz(){
+  document.querySelector('main').style.display='none';
+  document.querySelector('nav').style.display='none';
+  el('quizPanel').style.display='block';
+  document.querySelectorAll('.pill').forEach(p=>p.classList.remove('active'));
+  el('quizpill').classList.add('active');
+  qi=0; qscore=0; renderQuiz();
+}
+function renderQuiz(){
+  qansw=false;
+  const it=QUIZ[qi];
+  el('quizPanel').innerHTML='<h2>Check Your Understanding</h2>'+
+    '<div class="qtext">'+(qi+1)+' / '+QUIZ.length+' &mdash; '+it.q+'</div><div id="qopts"></div>'+
+    '<div class="qexplain" id="qexplain">'+it.explain+'</div>'+
+    '<div class="qfoot"><span class="sc" id="qsc">Score: '+qscore+' / '+QUIZ.length+'</span>'+
+    '<button class="ghost" id="qnext" disabled onclick="nextQuiz()">'+(qi===QUIZ.length-1?'See score →':'Next →')+'</button></div>';
+  const o=el('qopts');
+  it.options.forEach((op,idx)=>{const b=document.createElement('button');b.className='qopt';b.textContent=op.t;b.onclick=(e)=>pickQuiz(idx,e.currentTarget);o.appendChild(b);});
+}
+function pickQuiz(idx,btn){
+  if(qansw)return; qansw=true;
+  const it=QUIZ[qi];
+  el('qopts').querySelectorAll('.qopt').forEach((b,i2)=>{b.disabled=true;if(it.options[i2].ok)b.classList.add('ok');});
+  if(it.options[idx].ok){qscore++;el('qsc').textContent='Score: '+qscore+' / '+QUIZ.length;} else btn.classList.add('bad');
+  el('qexplain').style.display='block'; el('qnext').disabled=false;
+}
+function nextQuiz(){ qi++; if(qi<QUIZ.length)renderQuiz(); else finishQuiz(); }
+function finishQuiz(){
+  const pct=Math.round(qscore/QUIZ.length*100);
+  const msg=pct===100?'Perfect — you’ve got this.':pct>=70?'Solid understanding.':pct>=40?'Good start — revisit the lessons you missed.':'Worth another pass through the lessons.';
+  el('quizPanel').innerHTML='<h2>Check Your Understanding</h2><div class="qtext">You scored '+qscore+' / '+QUIZ.length+' ('+pct+'%)</div><p>'+msg+'</p>'+
+    '<button class="ghost" onclick="restartQuiz()">↺ Retake</button> <button class="ghost" onclick="showLesson()">← Back to lessons</button>';
+  bestQuizScore = (bestQuizScore===null) ? qscore : Math.max(bestQuizScore, qscore);
+  saveQC();
+}
+function restartQuiz(){ qi=0; qscore=0; renderQuiz(); }
+
+function letterGrade(pct){
+  if(pct===null) return {text:'—',cls:'grade-dash'};
+  if(pct>=90) return {text:'A',cls:'grade-A'};
+  if(pct>=80) return {text:'B',cls:'grade-B'};
+  if(pct>=70) return {text:'C',cls:'grade-C'};
+  if(pct>=60) return {text:'D',cls:'grade-D'};
+  return {text:'F',cls:'grade-F'};
+}
+function renderReportCard(){
+  const qcDone = qcAnswered.filter(Boolean).length;
+  const attempted = bestQuizScore !== null;
+  const pct = attempted ? Math.round(bestQuizScore/QUIZ.length*100) : null;
+  const grade = letterGrade(attempted?pct:null);
+  const overallItems = qcDone + (attempted?1:0);
+  const overallTotal = LESSONS.length+1;
+  const overallPct = Math.round(overallItems/overallTotal*100);
+  const now = new Date();
+  el('toolPanel').innerHTML =
+    '<h2 style="color:#93c5fd;margin-top:0">Report Card</h2>'+
+    '<p style="color:var(--muted);font-size:12px;margin-top:-6px">Dockerized-Microservices &middot; generated '+now.toLocaleDateString()+' '+now.toLocaleTimeString()+'</p>'+
+    '<div class="report-overall"><span class="big '+grade.cls+'">'+grade.text+'</span><span style="color:var(--muted);font-size:13px">Final quiz grade'+(attempted?'':' (not yet taken)')+'</span></div>'+
+    '<h4>Lessons</h4><div class="report-row"><span>Quick checks completed</span><span class="grade">'+qcDone+' / '+LESSONS.length+'</span></div>'+
+    '<h4>Final Quiz</h4><div class="report-row"><span>Best score</span><span class="grade">'+(attempted?(bestQuizScore+' / '+QUIZ.length+' ('+pct+'%)'):'Not attempted')+'</span></div>'+
+    '<h4>Overall</h4><div class="report-row"><span>Lessons + quiz completed</span><span class="grade">'+overallItems+' / '+overallTotal+' ('+overallPct+'%)</span></div>'+
+    '<button class="ghost" id="printBtn" style="margin-top:16px">🖨️ Print / Save as PDF</button>'+
+    '<p style="color:var(--muted);font-size:11px;margin-top:8px">In the print dialog, choose <b>Save as PDF</b> and save it into this project\'s <code>docs/</code> folder to keep a dated record.</p>';
+  el('printBtn').onclick = ()=>window.print();
+}
+function openReportCard(){
+  document.querySelector('main').style.display='none';
+  document.querySelector('nav').style.display='none';
+  el('quizPanel').style.display='none';
+  el('toolPanel').style.display='block';
+  document.querySelectorAll('.pill').forEach(p=>p.classList.remove('active'));
+  el('reportpill').classList.add('active');
+  renderReportCard();
+}
+
+const pills=el('pills');
+LESSONS.forEach((l,idx)=>{const b=document.createElement('div');b.className='pill';b.textContent=l.short;b.onclick=()=>{showLesson();i=idx;render();};pills.appendChild(b);});
+const qp=document.createElement('div');qp.className='pill';qp.id='quizpill';qp.textContent='✓ Quiz';qp.onclick=openQuiz;pills.appendChild(qp);
+const rp=document.createElement('div');rp.className='pill';rp.id='reportpill';rp.textContent='📊 Report Card';rp.onclick=openReportCard;pills.appendChild(rp);
+render();
+</script>
+</body>
+</html>

@@ -7,6 +7,11 @@
 
 <!-- SCREENSHOT PLACEHOLDER: docs/screenshots/overview.png -->
 
+> **Why this matters:** Docker Compose + a reverse proxy + a background-job
+> queue is the default local-dev and small-production shape for any API that
+> can't do everything inline — hired for as *Backend/Platform Engineer* and
+> *DevOps/SRE*. It's the exact pattern C-4 later deploys to Kubernetes.
+
 ## Why This Was Built
 
 The job board works on my machine, which is exactly the problem. Containerising it forces every implicit
@@ -31,7 +36,19 @@ proxy in front, a worker for background jobs, and images small enough that a reb
 
 ```
 Dockerized-Microservices/
-├── README.md
+├── api/                    # FastAPI app — same image used by the api AND worker services
+│   ├── app/
+│   │   ├── main.py         # GET /jobs, POST /jobs/{id}/apply (enqueues, returns 202)
+│   │   ├── celery_app.py   # Celery() instance, broker=redis
+│   │   └── tasks.py        # send_application_notification — runs on the worker
+│   ├── tests/test_main.py
+│   ├── requirements.txt
+│   └── Dockerfile          # multi-stage: build deps, then slim runtime
+├── frontend/index.html     # static SPA stand-in, served by nginx
+├── nginx/nginx.conf        # reverse proxy: /api/ -> api:8000, / -> static files
+├── docker-compose.yml      # redis, api, worker, nginx — healthcheck-gated depends_on
+├── .github/workflows/ci.yml
+├── .env.example
 ├── docs/{LESSON_PLAN.md, interactive/index.html, screenshots/}
 ├── LICENSE-GPL
 └── LICENSE-AGPL
